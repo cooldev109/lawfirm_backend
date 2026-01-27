@@ -1,6 +1,5 @@
 import { query, transaction } from '../config/database';
 import { userRepository } from '../repositories/userRepository';
-import { caseEventRepository } from '../repositories/caseRepository';
 import { documentService } from './documentService';
 import { emailService } from './emailService';
 import { emailNotificationService } from './emailNotificationService';
@@ -274,7 +273,7 @@ export const intakeService = {
     clientName: string,
     caseNumber: string,
     caseType: CaseType,
-    description: string
+    _description: string
   ): Promise<void> {
     try {
       // Get lawyer's email and name

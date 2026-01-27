@@ -1,7 +1,7 @@
 import Imap from 'imap';
 import { simpleParser, ParsedMail, Attachment } from 'mailparser';
 import { config } from '../config/env';
-import { query, transaction } from '../config/database';
+import { query } from '../config/database';
 import { logger } from '../utils/logger';
 import { documentService } from './documentService';
 import { caseEventRepository } from '../repositories/caseRepository';
@@ -139,8 +139,8 @@ class ImapService {
           });
 
           fetch.on('message', (msg) => {
-            msg.on('body', (stream) => {
-              simpleParser(stream, (parseErr, parsed) => {
+            msg.on('body', (stream: any) => {
+              simpleParser(stream, (parseErr: any, parsed: ParsedMail) => {
                 if (parseErr) {
                   logger.error('Failed to parse email:', parseErr);
                   return;
@@ -206,7 +206,6 @@ class ImapService {
       // Try to find case by email subject pattern (e.g., "Re: Case 2024-PI-0001")
       const caseNumber = this.extractCaseNumber(email.subject);
       let caseId: string | null = null;
-      let clientId: string | null = null;
 
       if (caseNumber) {
         // Find existing case
@@ -216,7 +215,6 @@ class ImapService {
         );
         if (caseResult.length > 0) {
           caseId = caseResult[0].id;
-          clientId = caseResult[0].client_id;
         }
       }
 
@@ -234,7 +232,7 @@ class ImapService {
         );
         if (userResult.length > 0) {
           caseId = userResult[0].case_id;
-          clientId = userResult[0].client_id;
+          // clientId not used but kept for possible future use
         }
       }
 
@@ -254,8 +252,8 @@ class ImapService {
                 mimetype: attachment.contentType,
                 size: attachment.size,
               },
-              null, // No user ID for email attachments
-              'client',
+              '', // No user ID for email attachments
+              'client' as any,
               `Received via email: ${email.subject}`
             );
           } catch (attachErr) {

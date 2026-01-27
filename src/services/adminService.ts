@@ -14,7 +14,18 @@ export interface SystemStats {
   activeLawyers: number;
 }
 
-export interface UserWithDetails extends User {
+export interface UserWithDetails {
+  id: string;
+  email: string;
+  password_hash?: string;
+  role: UserRole;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+  last_login_at?: Date;
   client?: {
     id: string;
     company_name?: string;
@@ -23,7 +34,7 @@ export interface UserWithDetails extends User {
     id: string;
     specialization?: string;
     is_available: boolean;
-    current_case_count: number;
+    current_case_count?: number;
   };
 }
 
@@ -190,12 +201,12 @@ export const adminService = {
   }): Promise<UserWithDetails> {
     const password_hash = await bcrypt.hash(data.password, 10);
 
-    if (data.role === 'lawyer') {
+    if (data.role === UserRole.LAWYER) {
       const result = await lawyerRepository.createWithUser(
         {
           email: data.email,
           password_hash,
-          role: 'lawyer',
+          role: UserRole.LAWYER,
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone,
@@ -214,15 +225,15 @@ export const adminService = {
           id: result.lawyer.id,
           specialization: result.lawyer.specialization,
           is_available: result.lawyer.is_available,
-          current_case_count: result.lawyer.current_case_count,
+          current_case_count: result.lawyer.current_case_count ?? 0,
         },
       };
-    } else if (data.role === 'client') {
+    } else if (data.role === UserRole.CLIENT) {
       const result = await clientRepository.createWithUser(
         {
           email: data.email,
           password_hash,
-          role: 'client',
+          role: UserRole.CLIENT,
           first_name: data.first_name,
           last_name: data.last_name,
           phone: data.phone,
@@ -244,13 +255,13 @@ export const adminService = {
       const user = await userRepository.create({
         email: data.email,
         password_hash,
-        role: 'admin',
+        role: UserRole.ADMIN,
         first_name: data.first_name,
         last_name: data.last_name,
         phone: data.phone,
       });
 
-      return user;
+      return user as UserWithDetails;
     }
   },
 

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { intakeController, intakeValidation } from '../controllers/intakeController';
 import { intakeLimiter } from '../middleware/rateLimiter';
@@ -21,7 +21,7 @@ router.post(
   intakeLimiter, // Rate limit intake submissions
   upload.array('files', 5),
   intakeValidation,
-  intakeController.submitIntakeForm
+  (req: Request, res: Response, next: NextFunction) => intakeController.submitIntakeForm(req as any, res, next)
 );
 
 // Get available case types

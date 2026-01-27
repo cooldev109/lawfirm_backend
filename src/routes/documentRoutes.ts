@@ -1,8 +1,7 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { documentController } from '../controllers/documentController';
-import { authenticate, authorize } from '../middleware/auth';
-import { UserRole } from '../types';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -21,38 +20,38 @@ router.use(authenticate);
 router.post(
   '/cases/:caseId/upload',
   upload.single('file'),
-  documentController.uploadDocument
+  (req: Request, res: Response, next: NextFunction) => documentController.uploadDocument(req as any, res, next)
 );
 
 // Upload multiple documents to a case
 router.post(
   '/cases/:caseId/upload-multiple',
   upload.array('files', 10), // Max 10 files
-  documentController.uploadMultipleDocuments
+  (req: Request, res: Response, next: NextFunction) => documentController.uploadMultipleDocuments(req as any, res, next)
 );
 
 // Get all documents for a case
 router.get(
   '/cases/:caseId',
-  documentController.getDocumentsByCaseId
+  (req: Request, res: Response, next: NextFunction) => documentController.getDocumentsByCaseId(req as any, res, next)
 );
 
 // Get single document metadata
 router.get(
   '/:documentId',
-  documentController.getDocumentById
+  (req: Request, res: Response, next: NextFunction) => documentController.getDocumentById(req as any, res, next)
 );
 
 // Download document
 router.get(
   '/:documentId/download',
-  documentController.downloadDocument
+  (req: Request, res: Response, next: NextFunction) => documentController.downloadDocument(req as any, res, next)
 );
 
 // Delete document (admin or uploader only)
 router.delete(
   '/:documentId',
-  documentController.deleteDocument
+  (req: Request, res: Response, next: NextFunction) => documentController.deleteDocument(req as any, res, next)
 );
 
 export default router;

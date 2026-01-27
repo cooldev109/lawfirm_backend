@@ -1,5 +1,5 @@
 import { query } from '../config/database';
-import { caseRepository, caseEventRepository } from '../repositories/caseRepository';
+import { caseEventRepository } from '../repositories/caseRepository';
 import { emailNotificationService } from '../services/emailNotificationService';
 import { notificationService, NotificationType } from '../services/notificationService';
 import { config } from '../config';
@@ -72,7 +72,7 @@ export const inactivityCheckJob = {
     );
   },
 
-  async sendInactivityNotification(caseRecord: InactiveCase, daysThreshold: number): Promise<void> {
+  async sendInactivityNotification(caseRecord: InactiveCase, _daysThreshold: number): Promise<void> {
     const clientName = `${caseRecord.client_first_name} ${caseRecord.client_last_name}`;
     const daysSinceActivity = Math.floor(
       (Date.now() - new Date(caseRecord.last_activity_at).getTime()) / (24 * 60 * 60 * 1000)

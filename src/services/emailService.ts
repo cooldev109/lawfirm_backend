@@ -128,12 +128,13 @@ export const emailService = {
       bodyHtml = bodyHtml.replace(new RegExp(placeholder, 'g'), value);
     }
 
-    return this.sendEmail({
+    const result = await this.sendEmail({
       to,
       subject,
       text: bodyText,
       html: bodyHtml,
     });
+    return result.success;
   },
 
   // Specific notification methods
@@ -381,7 +382,7 @@ ${config.smtp.fromName}
     to: string,
     subject: string,
     status: 'sent' | 'failed',
-    error?: string
+    _error?: string
   ): Promise<void> {
     try {
       await query(

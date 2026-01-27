@@ -281,7 +281,7 @@ export const emailTemplateService = {
       rendered = rendered.replace(regex, value || '');
     }
     // Handle conditional blocks {{#if variable}}...{{/if}}
-    rendered = rendered.replace(/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, varName, content) => {
+    rendered = rendered.replace(/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match, varName, content) => {
       return variables[varName] ? content : '';
     });
     return rendered;

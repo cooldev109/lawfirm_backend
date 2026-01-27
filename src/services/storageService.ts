@@ -5,9 +5,9 @@ import { config } from '../config';
 import { logger } from '../utils/logger';
 
 export interface UploadedFile {
-  fieldname: string;
+  fieldname?: string;
   originalname: string;
-  encoding: string;
+  encoding?: string;
   mimetype: string;
   buffer: Buffer;
   size: number;

@@ -109,7 +109,6 @@ export const weeklySummaryJob = {
 
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 
     const activeStatuses = [CaseStatus.NEW, CaseStatus.IN_PROGRESS, CaseStatus.PENDING_REVIEW, CaseStatus.ON_HOLD];
 

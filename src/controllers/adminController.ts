@@ -193,7 +193,7 @@ export const adminController = {
         const userId = req.params.id;
 
         // Prevent admin from deleting themselves
-        if (req.user?.id === userId) {
+        if ((req.user as any)?.userId === userId) {
           throw new BadRequestError('Cannot delete your own account');
         }
 

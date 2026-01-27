@@ -10,8 +10,10 @@ export enum CaseStatus {
   ACTIVE = 'active',
   PENDING_CLIENT = 'pending_client',
   PENDING_DOCUMENTS = 'pending_documents',
+  PENDING_REVIEW = 'pending_review',
   IN_PROGRESS = 'in_progress',
   AWAITING_RESPONSE = 'awaiting_response',
+  ON_HOLD = 'on_hold',
   RESOLVED = 'resolved',
   CLOSED = 'closed',
   ARCHIVED = 'archived',
@@ -42,6 +44,7 @@ export enum CaseEventType {
   LAWYER_NOTE_ADDED = 'lawyer_note_added',
   CLIENT_NOTIFIED = 'client_notified',
   INACTIVITY_ALERT = 'inactivity_alert',
+  DEADLINE_REMINDER = 'deadline_reminder',
   PENDING = 'pending',
   MESSAGE_SENT = 'message_sent',
 }
@@ -92,6 +95,8 @@ export interface Lawyer {
   specialization?: string;
   is_available: boolean;
   max_cases?: number;
+  current_case_count?: number;
+  hourly_rate?: number;
   created_at: Date;
   updated_at: Date;
 }

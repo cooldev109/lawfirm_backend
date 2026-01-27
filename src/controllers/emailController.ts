@@ -35,8 +35,8 @@ export const emailController = {
       // Only admins, assigned lawyers, or the client can view emails
       if (
         user.role !== UserRole.ADMIN &&
-        user.id !== caseData.lawyer_id &&
-        user.id !== caseData.client_user_id
+        user.userId !== caseData.lawyer_id &&
+        user.userId !== caseData.client_user_id
       ) {
         throw new ForbiddenError('Access denied');
       }
@@ -83,8 +83,8 @@ export const emailController = {
       // Check access
       if (
         user.role !== UserRole.ADMIN &&
-        user.id !== email.lawyer_id &&
-        user.id !== email.client_user_id
+        user.userId !== email.lawyer_id &&
+        user.userId !== email.client_user_id
       ) {
         throw new ForbiddenError('Access denied');
       }
@@ -120,7 +120,7 @@ export const emailController = {
           throw new NotFoundError('Case not found');
         }
 
-        if (user.role !== UserRole.ADMIN && user.id !== caseAccess[0].lawyer_id) {
+        if (user.role !== UserRole.ADMIN && user.userId !== caseAccess[0].lawyer_id) {
           throw new ForbiddenError('Access denied');
         }
       }
@@ -235,7 +235,7 @@ export const emailController = {
       // Update email
       await query('UPDATE emails SET case_id = $1, updated_at = NOW() WHERE id = $2', [caseId, id]);
 
-      logger.info(`Email ${id} assigned to case ${caseId} by user ${user.id}`);
+      logger.info(`Email ${id} assigned to case ${caseId} by user ${user.userId}`);
 
       res.json({
         success: true,

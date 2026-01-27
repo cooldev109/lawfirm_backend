@@ -50,7 +50,7 @@ function generateToken(user: User): string {
     email: user.email,
     role: user.role,
   };
-  return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+  return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn as jwt.SignOptions['expiresIn'] });
 }
 
 function sanitizeUser(user: User): Omit<User, 'password_hash'> {
