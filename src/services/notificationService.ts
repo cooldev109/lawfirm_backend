@@ -244,10 +244,12 @@ export const notificationService = {
     uploaderName: string,
     documentName: string
   ): Promise<void> {
-    // Get client user_id from case
+    // Get client user_id and email from case
     const cases = await query(
-      `SELECT c.client_id, cl.user_id FROM cases c
+      `SELECT c.client_id, c.title, cl.user_id, u.email, u.first_name, u.last_name
+       FROM cases c
        JOIN clients cl ON c.client_id = cl.id
+       JOIN users u ON cl.user_id = u.id
        WHERE c.id = $1`,
       [caseId]
     );
@@ -257,8 +259,10 @@ export const notificationService = {
       return;
     }
 
-    const userId = cases[0].user_id;
+    const { user_id: userId, email, first_name, last_name, title: caseTitle } = cases[0];
+    const clientName = `${first_name} ${last_name}`;
 
+    // Create in-app notification
     await this.create({
       userId,
       type: NotificationType.DOCUMENT_UPLOADED,
@@ -266,6 +270,18 @@ export const notificationService = {
       message: `${uploaderName} uploaded "${documentName}" to case ${caseNumber}.`,
       caseId,
     });
+
+    // Send email notification (non-blocking)
+    emailNotificationService.notifyDocumentUploaded(
+      email,
+      clientName,
+      uploaderName,
+      caseNumber,
+      caseTitle,
+      documentName,
+      caseId,
+      true // recipient is client
+    ).catch(err => logger.warn('Failed to send document upload email to client:', err));
   },
 
   // Helper method to notify lawyer about document upload
@@ -275,10 +291,12 @@ export const notificationService = {
     uploaderName: string,
     documentName: string
   ): Promise<void> {
-    // Get lawyer user_id from case
+    // Get lawyer user_id and email from case
     const cases = await query(
-      `SELECT c.lawyer_id, l.user_id FROM cases c
+      `SELECT c.lawyer_id, c.title, l.user_id, u.email, u.first_name, u.last_name
+       FROM cases c
        JOIN lawyers l ON c.lawyer_id = l.id
+       JOIN users u ON l.user_id = u.id
        WHERE c.id = $1 AND c.lawyer_id IS NOT NULL`,
       [caseId]
     );
@@ -287,8 +305,10 @@ export const notificationService = {
       return; // No lawyer assigned
     }
 
-    const userId = cases[0].user_id;
+    const { user_id: userId, email, first_name, last_name, title: caseTitle } = cases[0];
+    const lawyerName = `${first_name} ${last_name}`;
 
+    // Create in-app notification
     await this.create({
       userId,
       type: NotificationType.DOCUMENT_UPLOADED,
@@ -296,6 +316,18 @@ export const notificationService = {
       message: `${uploaderName} uploaded "${documentName}" to case ${caseNumber}.`,
       caseId,
     });
+
+    // Send email notification (non-blocking)
+    emailNotificationService.notifyDocumentUploaded(
+      email,
+      lawyerName,
+      uploaderName,
+      caseNumber,
+      caseTitle,
+      documentName,
+      caseId,
+      false // recipient is lawyer
+    ).catch(err => logger.warn('Failed to send document upload email to lawyer:', err));
   },
 
   // Helper method to notify client when lawyer is assigned
